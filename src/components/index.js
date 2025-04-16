@@ -4,3 +4,4 @@ export * from "./ThirdStep";
 export * from "./Input";
 export * from "./HeaderComponents";
 export * from "./SubmitComponents";
+export * from "./FinalComponents";

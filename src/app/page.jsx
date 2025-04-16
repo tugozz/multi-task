@@ -1,24 +1,59 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
 import { initialFormValues } from "./constants/constant";
-import { FirstStep } from "@/components/FirstStep";
-import { SecondStep } from "@/components/SecondStep";
-import { ThirdStep } from "@/components/ThirdStep";
-import { SubmitComponents } from "@/components/SubmitComponents";
+import { FirstStep, SubmitComponents } from "@/components";
+import { SecondStep } from "@/components";
+import { ThirdStep } from "@/components";
 
 const page = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formValues, setFormValues] = useState(initialFormValues);
+  const [formErrors, setFormErrors] = useState(initialFormValues);
+  const inputImageRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [previewLink, setPreviewLink] = useState("");
 
-  const handleInputChange = (event) => {
+  const updateFormErrors = (errors) => {
+    setFormErrors((previousErrors) => ({ ...previousErrors, ...errors }));
+  };
+
+  const handleErrorChange = (event) => {
     const { name, value } = event.target;
 
+    setFormErrors((previousErrors) => ({ ...previousErrors, [name]: "" }));
     setFormValues((previousValues) => ({ ...previousValues, [name]: value }));
   };
 
-  console.log("formValues", formValues);
+  const openBrowse = () => {
+    inputImageRef.current?.click();
+  };
+
+  const handleFileInput = (event) => {
+    const file = Array.from(event.target.files)[0];
+    setPreviewLink(URL.createObjectURL(file));
+    setFormValues((previous) => ({ ...previous, profileImage: file }));
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const file = Array.from(event.dataTransfer.files)[0];
+    setPreviewLink(URL.createObjectURL(file));
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormValues((previousValues) => ({ ...previousValues, [name]: value }));
+  };
 
   const addStep = () => {
     setCurrentStep((prev) => prev + 1);
@@ -38,6 +73,16 @@ const page = () => {
           previousStep={previousStep}
           handleInputChange={handleInputChange}
           formValues={formValues}
+          inputImageRef={inputImageRef}
+          previewLink={previewLink}
+          openBrowse={openBrowse}
+          formErrors={formErrors}
+          handleDrop={handleDrop}
+          handleDragOver={handleDragOver}
+          handleDragLeave={handleDragLeave}
+          isDragging={isDragging}
+          updateFormErrors={updateFormErrors}
+          handleFileInput={handleFileInput}
         />
       </AnimatePresence>
     </div>

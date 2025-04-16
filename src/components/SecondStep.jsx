@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { HeaderComponents, Input } from "./";
 import { motion } from "framer-motion";
 
@@ -7,21 +7,61 @@ export const SecondStep = ({
   addStep,
   handleInputChange,
   formValues,
+  formErrors,
 }) => {
+  const [errors, setErrors] = useState({});
   const {
     email = "",
     phoneNumber = "",
     password = "",
     confirmPassword = "",
   } = formValues || {};
+
+  const validateInputs = () => {
+    const newErrors = {};
+
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Мэйл хаягаа зөв оруулна уу.";
+    }
+
+    if (!phoneNumber.trim()) {
+      newErrors.phoneNumber = "Утасны дугаараа оруулна уу.";
+    } else if (!/^\d{8}$/.test(phoneNumber)) {
+      newErrors.phoneNumber = "Утасны дугаар 8 оронтой байх ёстой.";
+    }
+
+    if (!password.trim() || password.length < 6) {
+      newErrors.password = "Нууц үг дор хаяж 6 тэмдэгттэй байх ёстой.";
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Нууц үгээ давтаж оруулна уу.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const isValid = validateInputs();
+    if (isValid) {
+      addStep();
+    }
+  };
+
   return (
     <motion.div
-      initial={{ opacitiy: 0, x: 100 }}
-      animate={{ opacitiy: 1, x: 0 }}
-      exit={{ opacitiy: 0, x: -100 }}
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className=" flex-col justify-center items-center w-[480px] h-[655px] bg-white rounded-lg">
+      <form
+        onSubmit={handleSubmit}
+        className="flex-col justify-center items-center w-[480px] h-[655px] bg-white rounded-lg"
+      >
         <div className="space-y-2 mb-7">
           <HeaderComponents />
           <div className="flex flex-col flex-grow gap-y-3">
@@ -32,7 +72,8 @@ export const SecondStep = ({
                 placeholder="Your email"
                 value={email}
                 onChange={handleInputChange}
-                label=" Email "
+                label="Email"
+                errorMessage={formErrors.email}
               />
             </div>
             <div className="space-y-2 pl-8">
@@ -42,46 +83,51 @@ export const SecondStep = ({
                 placeholder="Your phone number"
                 value={phoneNumber}
                 onChange={handleInputChange}
-                label="Phone number "
+                label="Phone number"
+                errorMessage={formErrors.phoneNumber}
               />
             </div>
             <div className="space-y-2 pl-8">
               <Input
-                type="text"
+                type="password"
                 name="password"
                 placeholder="Your password"
                 value={password}
                 onChange={handleInputChange}
-                label="Password  "
+                label="Password"
+                errorMessage={formErrors.password}
               />
             </div>
             <div className="space-y-2 pl-8">
               <Input
-                type="text"
+                type="password"
                 name="confirmPassword"
                 placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={handleInputChange}
-                label="Confirm password   "
+                label="Confirm password"
+                errorMessage={formErrors.confirmPassword}
               />
             </div>
           </div>
-          <div className="flex gap-4">
+
+          <div className="flex gap-4 pl-8 pr-7 mt-8">
             <button
+              type="button"
               onClick={previousStep}
-              className="  bg-gray-300 p-2 rounded-xl mt-4 px-4 text-black"
+              className="bg-gray-300 p-2 rounded-xl mt-4 px-4 text-black w-32"
             >
               Back
             </button>
             <button
-              className="  bg-black text-white p-2 rounded-xl mt-4 px-4"
-              onClick={addStep}
+              type="submit"
+              className="bg-black text-white p-2 rounded-xl mt-4 px-4 flex-1"
             >
               Continue 2/3
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </motion.div>
   );
 };
