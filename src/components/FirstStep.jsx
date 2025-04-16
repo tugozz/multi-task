@@ -98,7 +98,7 @@ export const FirstStep = ({
               />
             </div>
           </div>
-          <div className="pl-8 mt-[120px]">
+          <div className="pl-8 mt-[60px]">
             <button
               type="submit"
               className="bg-black text-white p-2 rounded-xl mt-4 px-4 w-[416px]"
