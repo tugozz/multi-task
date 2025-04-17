@@ -7,15 +7,20 @@ export const SecondStep = ({
   addStep,
   handleInputChange,
   formValues,
-  formErrors,
+  emailError,
+  phoneError,
+  passwordError,
+  confirmPasswordError,
+  currentStep,
 }) => {
-  const [errors, setErrors] = useState({});
   const {
     email = "",
     phoneNumber = "",
     password = "",
     confirmPassword = "",
   } = formValues || {};
+
+  const [errors, setErrors] = useState({});
 
   const validateInputs = () => {
     const newErrors = {};
@@ -42,11 +47,13 @@ export const SecondStep = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const isValid = validateInputs();
-    if (isValid) {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    localStorage.setItem(
+      "formData",
+      JSON.stringify({ ...formValues, step: currentStep + 1 })
+    );
+    if (validateInputs()) {
       addStep();
     }
   };
@@ -73,7 +80,7 @@ export const SecondStep = ({
                 value={email}
                 onChange={handleInputChange}
                 label="Email"
-                errorMessage={formErrors.email}
+                errorMessage={emailError || errors.email}
               />
             </div>
             <div className="space-y-2 pl-8">
@@ -84,7 +91,7 @@ export const SecondStep = ({
                 value={phoneNumber}
                 onChange={handleInputChange}
                 label="Phone number"
-                errorMessage={formErrors.phoneNumber}
+                errorMessage={phoneError || errors.phoneNumber}
               />
             </div>
             <div className="space-y-2 pl-8">
@@ -95,7 +102,7 @@ export const SecondStep = ({
                 value={password}
                 onChange={handleInputChange}
                 label="Password"
-                errorMessage={formErrors.password}
+                errorMessage={passwordError || errors.password}
               />
             </div>
             <div className="space-y-2 pl-8">
@@ -106,7 +113,7 @@ export const SecondStep = ({
                 value={confirmPassword}
                 onChange={handleInputChange}
                 label="Confirm password"
-                errorMessage={formErrors.confirmPassword}
+                errorMessage={confirmPasswordError || errors.confirmPassword}
               />
             </div>
           </div>

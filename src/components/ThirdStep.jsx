@@ -16,12 +16,18 @@ export const ThirdStep = ({
   handleDragLeave,
   isDragging,
   handleFileInput,
+  dateOfBirthError,
+  currentStep,
+  setCurrentStep,
+  setFormValues,
 }) => {
   const { dateOfBirth, profileImage } = formValues;
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = () => {
     const isValid = validateInputs();
+
     if (isValid) {
       setIsSubmitted(true);
     }
@@ -46,10 +52,16 @@ export const ThirdStep = ({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  if (isSubmitted) {
-    return <SubmitComponents />;
-  }
+  const handleJJSubmit = (event) => {
+    event.preventDefault();
+    localStorage.setItem(
+      "formData",
+      JSON.stringify({ ...formValues, step: currentStep + 1 })
+    );
+    if (validateInputs()) {
+      addStep();
+    }
+  };
 
   return (
     <motion.div
@@ -58,7 +70,10 @@ export const ThirdStep = ({
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col justify-center items-center w-[480px] h-[655px] bg-white rounded-lg">
+      <div
+        onSubmit={handleJJSubmit}
+        className="flex flex-col justify-center items-center w-[480px] h-[655px] bg-white rounded-lg"
+      >
         <div className="space-y-2 mb-7">
           <HeaderComponents />
 
@@ -70,6 +85,7 @@ export const ThirdStep = ({
                 label="Date of Birth"
                 value={dateOfBirth}
                 onChange={handleInputChange}
+                errorMessage={dateOfBirthError || errors.dateOfBirth}
               />
               {formErrors.dateOfBirth && (
                 <p className="text-red-600 text-sm mt-1">

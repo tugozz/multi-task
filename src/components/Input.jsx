@@ -6,6 +6,7 @@ export const Input = ({
   errorMessage,
   label,
   onChange,
+  value,
   name,
 }) => {
   return (
@@ -19,10 +20,13 @@ export const Input = ({
           name={name}
           onChange={onChange}
           type={type}
+          value={value}
           placeholder={placeholder}
           className="pl-1.5 w-[416] h-12  border-gray-300 text-[15px] border rounded-[5px]  "
         />
-        {errorMessage}
+        {errorMessage && (
+          <p className="text-red-600 text-[13px] m-[3px]">{errorMessage} </p>
+        )}
       </div>
     </div>
   );

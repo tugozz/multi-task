@@ -1,28 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { HeaderComponents, Input } from "./";
 import { motion } from "framer-motion";
-
-const isEmpty = (value) => !value?.trim();
-
-const validateStepOne = ({ firstName, lastName, userName }) => {
-  const validationErrors = {};
-
-  if (isEmpty(firstName)) {
-    validationErrors.firstName = "Нэрээ оруулна уу";
-  }
-
-  if (isEmpty(lastName)) {
-    validationErrors.lastName = "Овгоо оруулна уу";
-  }
-
-  if (isEmpty(userName)) {
-    validationErrors.userName = "Хэрэглэгчийн нэрээ оруулна уу";
-  }
-
-  const isFormValid = Object.keys(validationErrors).length === 0;
-
-  return { isFormValid, validationErrors };
-};
 
 export const FirstStep = ({
   addStep,
@@ -30,21 +8,46 @@ export const FirstStep = ({
   formValues,
   formErrors,
   updateFormErrors,
+  currentStep,
 }) => {
   const { firstName = "", lastName = "", userName = "" } = formValues || {};
-  const {
-    firstName: errorFirstName,
-    lastName: errorLastName,
-    userName: errorUserName,
-  } = formErrors || {};
+  const [errors, setErrors] = useState({});
+
+  const isEmpty = (value) => !value || value.trim() === "";
+
+  const validateStepOne = () => {
+    const validationErrors = {};
+
+    if (isEmpty(firstName)) {
+      validationErrors.firstName = "Нэрээ оруулна уу";
+    }
+
+    if (isEmpty(lastName)) {
+      validationErrors.lastName = "Овгоо оруулна уу";
+    }
+
+    if (isEmpty(userName)) {
+      validationErrors.userName = "Хэрэглэгчийн нэрээ оруулна уу";
+    }
+
+    return {
+      isFormValid: Object.keys(validationErrors).length === 0,
+      validationErrors,
+    };
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const { isFormValid, validationErrors } = validateStepOne(formValues);
+    const { isFormValid, validationErrors } = validateStepOne();
 
     if (isFormValid) {
       addStep();
+      localStorage.setItem(
+        "formData",
+        JSON.stringify({ ...formValues, step: currentStep + 1 })
+      );
     } else {
+      setErrors(validationErrors);
       updateFormErrors(validationErrors);
     }
   };
@@ -70,7 +73,7 @@ export const FirstStep = ({
                 placeholder="Your first name"
                 value={firstName}
                 onChange={handleInputChange}
-                errorMessage={errorFirstName}
+                errorMessage={errors.firstName}
                 label="First name"
                 className="w-[380px] h-[56px] text-base px-4 py-3"
               />
@@ -81,8 +84,8 @@ export const FirstStep = ({
                 type="text"
                 placeholder="Your last name"
                 value={lastName}
-                errorMessage={errorLastName}
                 onChange={handleInputChange}
+                errorMessage={errors.lastName}
                 label="Last name"
               />
             </div>
@@ -92,8 +95,8 @@ export const FirstStep = ({
                 name="userName"
                 placeholder="Your username"
                 value={userName}
-                errorMessage={errorUserName}
                 onChange={handleInputChange}
+                errorMessage={errors.userName}
                 label="Username"
               />
             </div>

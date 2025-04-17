@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { initialFormValues } from "./constants/constant";
 import { FirstStep, SubmitComponents } from "@/components";
@@ -43,6 +43,15 @@ const page = () => {
     setIsDragging(false);
   };
 
+  useEffect(() => {
+    const datas = localStorage.getItem("formData");
+    if (datas) {
+      const parsed = JSON.parse(datas);
+      setFormValues(parsed);
+      setCurrentStep(parsed.step);
+    }
+  }, []);
+
   const handleDragOver = (event) => {
     event.preventDefault();
     setIsDragging(true);
@@ -57,6 +66,10 @@ const page = () => {
 
   const addStep = () => {
     setCurrentStep((prev) => prev + 1);
+    if (currentStep === 2) {
+      localStorage.removeItem("formData");
+      setFormValues(initialFormValues);
+    }
   };
 
   const previousStep = () => {
@@ -83,6 +96,8 @@ const page = () => {
           isDragging={isDragging}
           updateFormErrors={updateFormErrors}
           handleFileInput={handleFileInput}
+          currentStep={currentStep}
+          setFormValues={setFormValues}
         />
       </AnimatePresence>
     </div>
