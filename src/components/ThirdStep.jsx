@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HeaderComponents, Input, SubmitComponents } from "./";
+import { FinalComponents, HeaderComponents, Input, SubmitComponents } from "./";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -20,18 +20,11 @@ export const ThirdStep = ({
   currentStep,
   setCurrentStep,
   setFormValues,
+  addStep,
 }) => {
   const { dateOfBirth, profileImage } = formValues;
-  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const [errors, setErrors] = useState({});
-
-  const handleSubmit = () => {
-    const isValid = validateInputs();
-
-    if (isValid) {
-      setIsSubmitted(true);
-    }
-  };
 
   const validateInputs = () => {
     const newErrors = {};
@@ -52,13 +45,14 @@ export const ThirdStep = ({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleJJSubmit = (event) => {
     event.preventDefault();
-    localStorage.setItem(
-      "formData",
-      JSON.stringify({ ...formValues, step: currentStep + 1 })
-    );
-    if (validateInputs()) {
+
+    const isValid = validateInputs();
+
+    if (isValid) {
+      localStorage.removeItem("formData");
       addStep();
     }
   };
@@ -70,7 +64,7 @@ export const ThirdStep = ({
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div
+      <form
         onSubmit={handleJJSubmit}
         className="flex flex-col justify-center items-center w-[480px] h-[655px] bg-white rounded-lg"
       >
@@ -140,6 +134,7 @@ export const ThirdStep = ({
 
           <div className="flex gap-4 pl-8 pr-7">
             <button
+              type="button"
               onClick={previousStep}
               className="bg-gray-300 p-2 rounded-xl mt-4 px-4 text-black w-32"
             >
@@ -147,14 +142,14 @@ export const ThirdStep = ({
             </button>
 
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="bg-black text-white p-2 rounded-xl mt-4 px-4 flex-1"
             >
               Submit 3/3
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </motion.div>
   );
 };

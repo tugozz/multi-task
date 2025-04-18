@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { initialFormValues } from "./constants/constant";
-import { FirstStep, SubmitComponents } from "@/components";
+import { FinalComponents, FirstStep, SubmitComponents } from "@/components";
 import { SecondStep } from "@/components";
 import { ThirdStep } from "@/components";
 
@@ -66,17 +66,17 @@ const page = () => {
 
   const addStep = () => {
     setCurrentStep((prev) => prev + 1);
-    if (currentStep === 2) {
-      localStorage.removeItem("formData");
-      setFormValues(initialFormValues);
-    }
   };
 
   const previousStep = () => {
     setCurrentStep((prev) => prev - 1);
   };
-
-  const CurrentStepComponent = [FirstStep, SecondStep, ThirdStep][currentStep];
+  const CurrentStepComponent = [
+    FirstStep,
+    SecondStep,
+    ThirdStep,
+    FinalComponents,
+  ][currentStep];
 
   return (
     <div className="flex justify-center items-center w-full h-screen bg-[#f3f4f6]">
